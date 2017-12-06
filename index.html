@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>voedeselstromen</title>
+    <meta charset="UTF-8">  
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css"
+   integrity="sha512-M2wvCLH6DSRazYeZRIm1JnYyh22purTM+FDB5CsyxtQJYeKq83arPe5wgbNmcFXGqiSH2XR8dT/fJISVA1r/zQ=="
+   crossorigin=""/> 
+    <link href="https://fonts.googleapis.com/css?family=Lato|Merriweather" rel="stylesheet">
+    <link rel="stylesheet" href="main.css"/>
+        <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"
+   integrity="sha512-lInM/apFSqyy1o6s89K4iQUKg6ppXEgsVxT35HbzUupEVRh2Eu9Wdl4tHj7dZO0s1uvplcYGmt3498TtHq+log=="
+   crossorigin=""></script>
+</head>
+
+<body>
+    <h1>Ui - Dagelijkse kost</h1>
+    <p>percentage niet Westerse Allochtonen per buurt in Almere</p>
+    <div class='custom-popup' id="map"></div>   
+    
+    
+  <script src="data/total_31217.geojson" type="text/javascript"></script>
+  <script src="data/almere_buurten.geojson" type="text/javascript"></script>
+  
+    <script>  
+         
+    //initialize the map         
+        var map = L.map('map').setView([52.374897, 5.249610], 12);
+           
+         
+    //basiskaart met stamen toner        
+        var achtergrondkaart = L.tileLayer('http://{s}.tile.stamen.com/toner/{z}/{x}/{y}.png',{
+    attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
+    maxZoom: 19
+    });
+          
+    achtergrondkaart.addTo(map);
+                 
+
+    var geojsonMarkerOptions = {
+        radius: 5,
+        fillColor: "#61937a",
+        color: "#000",
+        weight: 1,
+        opacity: 1,
+        fillOpacity: 0.9
+    };
+
+    // control that shows state info on hover
+	   var info = L.control();
+
+	   info.onAdd = function (map) {
+		this._div = L.DomUtil.create('div', 'info');
+		this.update();
+		return this._div;
+	};
+        
+        info.update = function (props) {
+		this._div.innerHTML = '<h4>Buurten Almere</h4>' +  (props ?
+			'<b>' + props.BU_NAAM + '</b><br />' + props.BEV_DICHTH + ' mensen / mi<sup>2</sup>'
+			: 'Hover over een buurt');
+	};
+        
+        
+	info.addTo(map);
+
+        
+    // kleur afhankelijk van het percentage in dit geval niet westerse allochtonen//        
+        function getColor(d) {
+        return  d > 50  ? '#8c2d04' :
+                d > 40  ? '#d94801' :
+                d > 30  ? '#f16913' :
+                d > 20  ? '#fd8d3c' :
+                d > 10  ? '#fdae6b' :
+                d > 5   ? '#fdd0a2' :
+                d < 0   ? '#bdccd4' :
+                          '#feedde' ;
+        }
+        
+        function style(feature) {
+            return {
+                fillColor: getColor(feature.properties.P_N_W_AL),
+                weight: 2,
+                opacity: 1,
+                color: '#f2f0f1',
+                dashArray: '4',
+                fillOpacity: 0.8
+            };
+        }
+
+        L.geoJson(almere, {style: style}).addTo(map);
+    
+        function highlightFeature(e) {
+            var layer = e.target;
+
+            layer.setStyle({
+            weight: 5,
+            color: '#666',
+            dashArray: '',
+            fillOpacity: 0.7
+        });
+
+        if (!L.Browser.ie && !L.Browser.opera && !L.Browser.edge) {
+        layer.bringToFront();
+            }
+        }
+        
+        var geojson;
+        
+        function resetHighlight(e) {
+        geojson.resetStyle(e.target);
+        }
+        
+        function zoomToFeature(e) {
+		map.fitBounds(e.target.getBounds());
+	}
+
+	function onEachFeature(feature, layer) {
+		layer.on({
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
+			click: zoomToFeature
+		});
+	}
+
+geojson = L.geoJson(almere, {
+		style: style,
+		onEachFeature: onEachFeature
+	}).addTo(map);
+
+      
+        
+var layer = L.geoJSON(voedsel, {
+    pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, geojsonMarkerOptions);
+    }
+}).addTo(map);
+        
+var green;
+        
+        function resetHighlight(e) {
+    geojson.resetStyle(e.target);
+        }
+            function onEachFeature(feature, layer) {
+		layer.on({
+			mouseover: highlightFeature,
+			mouseout: resetHighlight,
+			click: zoomToFeature
+		});
+	}
+   
+        
+	var legend = L.control({position: 'bottomright'});
+
+	legend.onAdd = function (map) {
+
+		var div = L.DomUtil.create('div', 'info legend'),
+			grades = [0, 5, 10, 20, 30, 40, 50],
+			labels = [],
+			from, to;
+
+		for (var i = 0; i < grades.length; i++) {
+			from = grades[i];
+			to = grades[i + 1];
+
+			labels.push
+               ( 
+				'<i style="background:' + getColor(from + 1) + '"></i> ' +
+				from + (to ? '&ndash;' + to : '+'));
+		}
+
+		div.innerHTML = labels.join('<br>');
+		return div;
+	};
+
+	legend.addTo(map);
+        
+              
+        
+L.geoJSON(voedsel, {
+    pointToLayer: function (feature, latlng) {
+        return L.circleMarker(latlng, geojsonMarkerOptions);
+    }
+}).addTo(map);
+         
+	</script>
+</body>
+</html>
