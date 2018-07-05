@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>voedeselstromen</title>
     <meta charset="UTF-8">  
@@ -18,15 +19,16 @@
     <p>Hoe eet men ui in Almere en waar komt hij van het land? Is hij lokaal in Flevoland geproduceerd of komt hij van ver?</p>
     <div class='custom-popup' id="map"></div>   
     
-  
-    
+   
   <script src="data/almere_buurten.geojson" type="text/javascript"></script>
   <script src="data/total_31217.geojson" type="text/javascript"></script>
+  <script src="data/ui.geojson" type="text/javascript"></script>    
+    
     
 <script type="text/javascript">
          
     //initialize the map         
-        var map = L.map('map').setView([52.374897, 5.249610], 12);
+        var map = L.map('map').setView([52.374897, 5.249610], 11);
            
          
     //basiskaart met stamen toner        
@@ -38,7 +40,6 @@
     achtergrondkaart.addTo(map);
                  
 // control geeft info bij hover
-    
 	var info = L.control();
 
 	info.onAdd = function (map) {
@@ -81,7 +82,7 @@
         
         function style(feature) {
             return {
-                fillColor: getColor(feature.properties.P_N_W_AL),
+               fillColor: getColor(feature.properties.P_N_W_AL),
                 weight: 2,
                 opacity: 1,
                 color: '#f2f0f1',
@@ -89,7 +90,8 @@
                 fillOpacity: 0.8
             };
         }
-
+    
+    
         L.geoJson(almere, {style: style}).addTo(map);
     
         function highlightFeature(e) {
@@ -140,7 +142,39 @@ var layer = L.geoJSON(voedsel, {
     }
 }).addTo(map)
 ;
+    
+    
+//function uistyle(feature)  {
+  //  return{ 
+   //     fillColor: "#ccc111",  
+   //     color: "#ccc111",
+   //     fillOpacity:0.9
         
+        
+  //  };
+//}
+       
+    //L.geoJson(ui, {style: uistyle}).addTo(map);
+    //layer.bindPopup('<h1>'+ feature.properties.GWS_GEWAS +'</h1><p>gewas:'+feature.properties.CAT_GEWASC +'</p>');
+    
+        
+    L.geoJson(ui, {
+        style: function(feature) {
+            
+             {
+               ({fillColor: "#ff0000",
+                 color: "#ff0000",
+                 fillOpacity: 0.9
+                             
+                                           });
+                    
+                
+                    
+                                                }
+        }
+    }).addTo(map);
+    
+    
 var green;
         
         function resetHighlight(e) {
@@ -188,30 +222,9 @@ var green;
     }
 }).addTo(map);
     
-        
-        //voeg een willekeurige marker toe                       
-var foto_a = L.marker([52.363506, 5.206234]);         
-foto_a.addTo(map);   
-         
-var foto_b= L.marker([52.366565, 5.204953]);         
-foto_b.addTo(map);           
-    
-var foto_c= L.marker([52.405318, 5.278898]);         
-foto_c.addTo(map);  
-/*var miranda = L.marker([53.201, 5.799]);         
-miranda.addTo(map);            
+                
 
-var barbel = L.marker([52.351, 4.620]);         
-barbel.addTo(map); */ 
-        
-        var popup = "Nederlands, 40-67 jaar.";
-foto_a.bindPopup(popup);   
-         
-var popup1 = "Grieks, 40-67 jaar.";
-foto_b.bindPopup(popup1)
-        
-var popup2 = "Guyanees/Nederlands, 50+ jaar.";
-foto_c.bindPopup(popup2)
+ 
          
 	</script>
 </body>
