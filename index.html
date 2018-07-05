@@ -16,10 +16,9 @@
 
 <body>
     <h1>Ui - Dagelijkse kost</h1>
-    <p>Hoe eet men ui in Almere en waar komt hij van het land? Is hij lokaal in Flevoland geproduceerd of komt hij van ver?</p>
+    <p> De uien die je in de supermarkt koopt, waar komen die vandaan? Zijn ze lokaal geproduceerd in de Flevopolder? </p>
     <div class='custom-popup' id="map"></div>   
     
-  
     
   <script src="data/almere_buurten_afstand.geojson" type="text/javascript"></script>
   <script src="data/total_31217.geojson" type="text/javascript"></script>
@@ -75,10 +74,10 @@
         return  d > 1.2  ? '#8c2d04' :
                 d > 1.0  ? '#d94801' :
                 d > 0.8  ? '#f16913' :
-                d > 0.4  ? '#fd8d3c' :
-                d > 0.2  ? '#fdae6b' :
-                d > 0.1  ? '#fdd0a2' :
-                d < 0     ?  '#feedde' :
+                d > 0.6  ? '#fd8d3c' :
+                d > 0.4  ? '#fdae6b' :
+                d > 0.2  ? '#fdd0a2' :
+                d > 0    ?  '#feedde' :
                             '#bdccd4' ;
                          
         }
@@ -178,7 +177,7 @@ var green;
 	legend.onAdd = function (map) {
 
 		var div = L.DomUtil.create('div', 'info legend'),
-			grades = [0, 0.1, 0.2, 0.4, 0.8, 1.0, 1.2],
+			grades = ["null", 0.1, 0.2, 0.4, 0.6, 0.8, 1.0, 1.2, ],
 			labels = ['afstand tot supermarkt' + '<br>' +  ' in km per buurt'],
 			from, to;
 
@@ -188,7 +187,7 @@ var green;
 
 			labels.push
                ( 
-				'<i style="background:' + getColor(from + 1) + '"></i> ' +
+				'<i style="background:' + getColor(from + 0.1) + '"></i> ' +
 				from + (to ? '&ndash;' + to : '+'));
 		}
 
